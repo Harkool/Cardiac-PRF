@@ -435,7 +435,7 @@ def user_input_features():
             from shap.plots import _waterfall
             x_train_summary = shap.kmeans(trainx1,5)
             explainer_Dnn = shap.KernelExplainer(DNN_model.predict,x_train_summary)
-            shap_values= explainer_Dnn.shap_values(patient3)
+            shap_values= explainer_Dnn.shap_values(patient)
             _waterfall.waterfall_legacy(explainer_Dnn.expected_value[0], shap_values[0][0], feature_names=trainx1.columns)
             st.set_option('deprecation.showPyplotGlobalUse', False)
             st.write("Waterfall plot analysis of PRF for the patient:")
