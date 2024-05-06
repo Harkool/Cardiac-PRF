@@ -8,8 +8,7 @@ from numpy import genfromtxt
 import pandas as pd
 import shap
 from sklearn.linear_model import LogisticRegression as LR
-import catboost as cb
-from catboost.datasets import titanic
+
 import plotly.graph_objs as go 
 import plotly.express as px
 import matplotlib.pyplot as plt
@@ -23,7 +22,10 @@ import keras as K
 from keras import layers
 from keras.layers import Input,Dense,Activation,Dropout
 import tensorflow
-
+import matplotlib 
+from shap.plots import _waterfall
+import matplotlib.font_manager
+matplotlib.font_manager.fontManager.addfont('Times New Roman.ttf')
 
 def DNN_Model1():
     (layer0,layer1,layer2,layer3,layer4,layer5) = (8,16,32,16,8,1)
