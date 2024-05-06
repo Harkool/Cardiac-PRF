@@ -7,7 +7,6 @@ from numpy import argmax
 from numpy import genfromtxt
 import pandas as pd
 import shap
-from IPython.display import display 
 from sklearn.linear_model import LogisticRegression as LR
 import catboost as cb
 from catboost.datasets import titanic
