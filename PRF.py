@@ -338,7 +338,7 @@ class Valuestandard:
 
 skip_list = [2,3,4,5,6,7,8]
 VS = Valuestandard(skip_list, Skip=True)
-df=pd.read_csv('traindata1.csv',encoding='utf8')
+df=pd.read_csv('traindata1.CSV',encoding='utf8')
 df.RF.value_counts()
 VS.fit_transform(df)
 train_standard = VS.standard_data_1()
@@ -350,7 +350,7 @@ trainx1 = pd.DataFrame(trainx1, columns=cols1)
 
 skip_list = [6,7,8,9,10,11]
 VS1 = Valuestandard(skip_list, Skip=True)
-df1=pd.read_csv('traindata2.csv',encoding='utf8')
+df1=pd.read_csv('traindata2.CSV',encoding='utf8')
 VS1.fit_transform(df1)
 train_standard = VS1.standard_data_1()
 df1=train_standard
