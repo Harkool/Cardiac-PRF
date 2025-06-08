@@ -435,7 +435,7 @@ def user_input_features():
             from shap.plots import _waterfall
             x_train_summary = shap.kmeans(trainx1,5)
             explainer_Dnn = shap.KernelExplainer(DNN_model.predict,x_train_summary)
-            shap_values= explainer_Dnn.shap_values(patient)
+            shap_values = explainer_Dnn.shap_values(patient)
 
             fig, ax = plt.subplots()
             plt.clf()  
