@@ -418,7 +418,7 @@ def user_input_features():
         VS.fit_transform(patient3)
         patient=VS.standard_data_1()
         prediction=DNN_model.predict(patient3)
-        prediction=float(prediction[0][0])
+        prediction=1-float(prediction[0][0])
         def predict_PPCs():
             prediction=round(user_input_features[:, 1],3)
             return prediction
@@ -497,7 +497,7 @@ def user_input_features():
         VS.fit_transform(patient)
         patient=VS.standard_data_1()
         prediction=DNN_model1.predict(patient)
-        prediction=float(prediction[0][0])
+        prediction=1-float(prediction[0][0])
         def predict_PPCs():
             prediction=round(user_input_features[:, 1],3)
             return prediction
