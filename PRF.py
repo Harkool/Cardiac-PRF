@@ -436,10 +436,13 @@ def user_input_features():
             x_train_summary = shap.kmeans(trainx1,5)
             explainer_Dnn = shap.KernelExplainer(DNN_model.predict,x_train_summary)
             shap_values= explainer_Dnn.shap_values(patient)
-            _waterfall.waterfall_legacy(explainer_Dnn.expected_value[0], shap_values[0][0], feature_names=trainx1.columns)
-            #st.set_option('deprecation.showPyplotGlobalUse', False)
-            st.write("Waterfall plot analysis of PRF for the patient:")
-            st.pyplot(bbox_inches='tight')
+
+            fig, ax = plt.subplots()
+            plt.clf()  
+            _waterfall.waterfall_legacy((explainer_Dnn.expected_value[0],shap_values[0][0],feature_names=trainx1.columns)
+            fig = plt.gcf()
+            st.write("Waterfall plot analysis of PPCs for the patient:")
+            st.pyplot(fig)
             st.write("Abbreviations: PRF：Postoperative Respiratory Failure;  LVEF：Left Ventricular Ejection Fraction; Cr：Creatinine; ASA；American Society of Anesthesiologists; PAP：Pulmonary Arterial Pressure; COPD：Chronic Obstructive Pulmonary Disease.")
         if st.button("Reset"):
             st.write("")
@@ -514,11 +517,13 @@ def user_input_features():
 
             x_train_summary = shap.kmeans(trainx2,5)
             explainer_Dnn = shap.KernelExplainer(DNN_model1.predict,x_train_summary)
-            shap_values= explainer_Dnn.shap_values(patient)
-            _waterfall.waterfall_legacy(explainer_Dnn.expected_value[0], shap_values[0][0], max_display=11, feature_names=trainx2.columns)
-            #st.set_option('deprecation.showPyplotGlobalUse', False)
-            st.write("Waterfall plot analysis of PRF for the patient:")
-            st.pyplot(bbox_inches='tight')
+           
+            fig, ax = plt.subplots()
+            plt.clf()  
+            _waterfall.waterfall_legacy((explainer_Dnn.expected_value[0],shap_values[0][0],feature_names=trainx1.columns)
+            fig = plt.gcf()
+            st.write("Waterfall plot analysis of PPCs for the patient:")
+            st.pyplot(fig)
             st.write("Abbreviations: PRF：Postoperative Respiratory Failure;  LVEF：Left Ventricular Ejection Fraction; CPB：Cardiopulmonary Bypass; ASA；American Society of Anesthesiologists; PAP：Pulmonary Arterial Pressure; COPD：Chronic Obstructive Pulmonary Disease.")
         if st.button("Reset"):
             st.write("")
