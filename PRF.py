@@ -439,7 +439,7 @@ def user_input_features():
 
             fig, ax = plt.subplots()
             plt.clf()  
-            _waterfall.waterfall_legacy((explainer_Dnn.expected_value[0],shap_values[0][0],feature_names=trainx1.columns)
+            _waterfall.waterfall_legacy(explainer_Dnn.expected_value[0],shap_values[0][0],feature_names=trainx1.columns)
             fig = plt.gcf()
             st.write("Waterfall plot analysis of PPCs for the patient:")
             st.pyplot(fig)
@@ -520,7 +520,7 @@ def user_input_features():
            
             fig, ax = plt.subplots()
             plt.clf()  
-            _waterfall.waterfall_legacy((explainer_Dnn.expected_value[0],shap_values[0][0],feature_names=trainx1.columns)
+            _waterfall.waterfall_legacy(explainer_Dnn.expected_value[0],shap_values[0][0],feature_names=trainx1.columns)
             fig = plt.gcf()
             st.write("Waterfall plot analysis of PPCs for the patient:")
             st.pyplot(fig)
