@@ -8,7 +8,7 @@ import shap
 import matplotlib.pyplot as plt
 from shap.plots import _waterfall
 
-# ========== Model Definition ==========
+# ========== Model Definition ========== 
 class DNNModel1(nn.Module):
     def __init__(self, input_dim):
         super(DNNModel1, self).__init__()
@@ -35,7 +35,7 @@ class DNNModel2(nn.Module):
     def forward(self, x):
         return self.model(x)
 
-# ========== Scaler Preparation ==========
+# ========== Scaler Preparation ========== 
 def prepare_scaler(df, skip_list, target_col='RF'):
     X = df.drop(columns=[target_col])
     X_skip = X.iloc[:, skip_list]
@@ -44,7 +44,7 @@ def prepare_scaler(df, skip_list, target_col='RF'):
     scaler.fit(X_scale)
     return scaler, X.columns.tolist()
 
-# ========== SHAP Visualization ==========
+# ========== SHAP Visualization ========== 
 def explain_shap_waterfall(model, input_df, background_df, skip_list, scaler, st_placeholder):
     Xb_skip = background_df.iloc[:, skip_list]
     Xb_scale = background_df.drop(background_df.columns[skip_list], axis=1)
@@ -71,7 +71,7 @@ def explain_shap_waterfall(model, input_df, background_df, skip_list, scaler, st
     fig = plt.gcf()
     st_placeholder.pyplot(fig)
 
-# ========== Prediction ==========
+# ========== Prediction ========== 
 def predict_patient(input_df, model, skip_list, scaler, threshold):
     input_skip = input_df.iloc[:, skip_list]
     input_scale = input_df.drop(input_df.columns[skip_list], axis=1)
@@ -85,15 +85,17 @@ def predict_patient(input_df, model, skip_list, scaler, threshold):
     risk = "High risk" if prob >= threshold else "Low risk"
     return prob, risk
 
-# ========== Device ==========
+# ========== Device ========== 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# ========== Load Data ==========
-df1 = pd.read_csv("traindata1.CSV")
+# ========== Load Data ========== 
+# 读取 pkl 文件替代 CSV 文件
+df1 = pd.read_pickle("traindata1.pkl")  # 加载 pkl 文件
+df2 = pd.read_pickle("traindata2.pkl")  # 加载 pkl 文件
+
 skip1 = [2, 3, 4, 5, 6, 7]
 scaler1, columns1 = prepare_scaler(df1, skip1)
 
-df2 = pd.read_csv("traindata2.CSV")
 skip2 = [6, 7, 8, 9, 10]
 scaler2, columns2 = prepare_scaler(df2, skip2)
 
@@ -103,7 +105,7 @@ model1.load_state_dict(torch.load("dnn_model1.pth", map_location=device))
 model2 = DNNModel2(input_dim=len(columns2)).to(device)
 model2.load_state_dict(torch.load("dnn_model2.pth", map_location=device))
 
-# ========== Streamlit UI ==========
+# ========== Streamlit UI ========== 
 st.title("Risk Prediction for Postoperative Respiratory Failure (PRF)")
 
 model_type = st.sidebar.radio("Choose Model", ["Preoperative Model", "Pre + Intraoperative Model"])
@@ -112,11 +114,11 @@ if model_type == "Preoperative Model":
     a = [
         st.sidebar.number_input("Age", 18, 120),
         st.sidebar.number_input("Preoperative LVEF (%)", 1, 100),
-        0 if st.sidebar.selectbox('Pre-op WBC', ['<10*10⁹', '≥10*10⁹']) == '<10*10⁹' else 1,
-        0 if st.sidebar.selectbox('Pre-op Cr', ['≤110 μmol/L', '>110 μmol/L']) == '≤110 μmol/L' else 1,
-        0 if st.sidebar.selectbox('ASA status', ['I/II', 'III/IV/V']) == 'I/II' else 1,
+        0 if st.sidebar.selectbox('Preoperative WBC', ['<10*10⁹', '≥10*10⁹']) == '<10*10⁹' else 1,
+        0 if st.sidebar.selectbox('Preoperative Cr', ['≤110 μmol/L', '>110 μmol/L']) == '≤110 μmol/L' else 1,
+        0 if st.sidebar.selectbox('ASA physical status', ['I/II', 'III/IV/V']) == 'I/II' else 1,
         {'<25': 0, '25~40': 1, '40~70': 2, '>70': 3}[st.sidebar.selectbox('PAP (mmHg)', ['<25', '25~40', '40~70', '>70'])],
-        0 if st.sidebar.selectbox('Emergency', ['No', 'Yes']) == 'No' else 1,
+        0 if st.sidebar.selectbox('emergency treatment', ['No', 'Yes']) == 'No' else 1,
         0 if st.sidebar.selectbox('COPD', ['No', 'Yes']) == 'No' else 1
     ]
     input_df = pd.DataFrame([a], columns=columns1)
@@ -124,15 +126,15 @@ if model_type == "Preoperative Model":
 else:
     a = [
         st.sidebar.number_input("Age", 18, 120),
-        st.sidebar.number_input("Pre-op LVEF (%)", 1, 100),
+        st.sidebar.number_input("Preoperative LVEF (%)", 1, 100),
         st.sidebar.number_input("CPB duration (min)", 1),
-        st.sidebar.number_input("Crystalloid infusion (ml/kg)", 0.0),
-        st.sidebar.number_input("Colloid infusion (ml/kg)", 0.0),
-        st.sidebar.number_input("Auto blood (ml/kg)", 0.0),
-        0 if st.sidebar.selectbox('Pre-op WBC', ['<10*10⁹', '≥10*10⁹']) == '<10*10⁹' else 1,
-        0 if st.sidebar.selectbox('ASA status', ['I/II', 'III/IV/V']) == 'I/II' else 1,
+        st.sidebar.number_input("Intraoperative crystalloid infusion (ml/kg)", 0.0),
+        st.sidebar.number_input("Intraoperative colloid infusion (ml/kg)", 0.0),
+        st.sidebar.number_input("Autologous blood transfusion (ml/kg)", 0.0),
+        0 if st.sidebar.selectbox('Preoperative WBC', ['<10*10⁹', '≥10*10⁹']) == '<10*10⁹' else 1,
+        0 if st.sidebar.selectbox('ASA physical status', ['I/II', 'III/IV/V']) == 'I/II' else 1,
         {'<25': 0, '25~40': 1, '40~70': 2, '>70': 3}[st.sidebar.selectbox('PAP (mmHg)', ['<25', '25~40', '40~70', '>70'])],
-        0 if st.sidebar.selectbox('Emergency', ['No', 'Yes']) == 'No' else 1,
+        0 if st.sidebar.selectbox('emergency treatment', ['No', 'Yes']) == 'No' else 1,
         0 if st.sidebar.selectbox('COPD', ['No', 'Yes']) == 'No' else 1
     ]
     input_df = pd.DataFrame([a], columns=columns2)
