@@ -46,24 +46,27 @@ def prepare_scaler(df, skip_list, target_col='RF'):
 
 # ========== SHAP Visualization ==========
 def explain_shap_waterfall(model, input_df, background_df, skip_list, scaler, st_placeholder):
-    Xb = background_df.copy()
-    Xi = input_df.copy()
-    scale_cols = Xb.drop(Xb.columns, axis=1).columns
-    scaler_data = scaler.transform(Xb[scale_cols])
-    Xi_scaled = scaler.transform(Xi[scale_cols])
-    Xb[scale_cols] = scaler_data
-    Xi[scale_cols] = Xi_scaled
+    Xb_skip = background_df.iloc[:, skip_list]
+    Xb_scale = background_df.drop(background_df.columns[skip_list], axis=1)
+    Xb_scaled = scaler.transform(Xb_scale)
+    background_final = np.concatenate([Xb_scaled, Xb_skip], axis=1)
+
+    Xi_skip = input_df.iloc[:, skip_list]
+    Xi_scale = input_df.drop(input_df.columns[skip_list], axis=1)
+    Xi_scaled = scaler.transform(Xi_scale)
+    input_final = np.concatenate([Xi_scaled, Xi_skip], axis=1)
+
     explainer = shap.KernelExplainer(
         model=lambda x: model(torch.tensor(x, dtype=torch.float32).to(device)).cpu().detach().numpy(),
-        data=Xb.values
+        data=background_final
     )
-    shap_values = explainer.shap_values(Xi.values)
+    shap_values = explainer.shap_values(input_final)
 
     plt.clf()
     _waterfall.waterfall_legacy(
         explainer.expected_value[0],
         shap_values[0][0],
-        feature_names=Xb.columns
+        feature_names=input_df.columns
     )
     fig = plt.gcf()
     st_placeholder.pyplot(fig)
@@ -117,7 +120,7 @@ if model_type == "Preoperative Model":
         0 if st.sidebar.selectbox('COPD', ['No', 'Yes']) == 'No' else 1
     ]
     input_df = pd.DataFrame([a], columns=columns1)
-    prob, risk = predict_patient(input_df, model1, skip1, scaler1, threshold=0.2158)
+    prob, risk = predict_patient(input_df, model1, skip1, scaler1, threshold=0.3477)
 else:
     a = [
         st.sidebar.number_input("Age", 18, 120),
@@ -133,7 +136,7 @@ else:
         0 if st.sidebar.selectbox('COPD', ['No', 'Yes']) == 'No' else 1
     ]
     input_df = pd.DataFrame([a], columns=columns2)
-    prob, risk = predict_patient(input_df, model2, skip2, scaler2, threshold=0.2633)
+    prob, risk = predict_patient(input_df, model2, skip2, scaler2, threshold=0.3602)
 
 if st.button("Predict PRF Risk"):
     st.success(f"Predicted Probability: {prob*100:.1f}%")
@@ -145,6 +148,7 @@ if st.button("Predict PRF Risk"):
             explain_shap_waterfall(model1, input_df, df1.drop(columns=['RF']), skip1, scaler1, st)
         else:
             explain_shap_waterfall(model2, input_df, df2.drop(columns=['RF']), skip2, scaler2, st)
+
 st.markdown("---")
 st.markdown("*This application does not store any of your input data.*")
 st.write("2025 Nanjing First Hospital, Nanjing Medical University. All Rights Reserved ")
