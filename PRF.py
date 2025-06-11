@@ -46,27 +46,24 @@ def prepare_scaler(df, skip_list, target_col='RF'):
 
 # ========== SHAP Visualization ==========
 def explain_shap_waterfall(model, input_df, background_df, skip_list, scaler, st_placeholder):
-    Xb_skip = background_df.iloc[:, skip_list]
-    Xb_scale = background_df.drop(background_df.columns[skip_list], axis=1)
-    Xb_scaled = scaler.transform(Xb_scale)
-    background_final = np.concatenate([Xb_scaled, Xb_skip], axis=1)
-
-    Xi_skip = input_df.iloc[:, skip_list]
-    Xi_scale = input_df.drop(input_df.columns[skip_list], axis=1)
-    Xi_scaled = scaler.transform(Xi_scale)
-    input_final = np.concatenate([Xi_scaled, Xi_skip], axis=1)
-
+    Xb = background_df.copy()
+    Xi = input_df.copy()
+    scale_cols = Xb.drop(Xb.columns[skip_list], axis=1).columns
+    scaler_data = scaler.transform(Xb[scale_cols])
+    Xi_scaled = scaler.transform(Xi[scale_cols])
+    Xb[scale_cols] = scaler_data
+    Xi[scale_cols] = Xi_scaled
     explainer = shap.KernelExplainer(
         model=lambda x: model(torch.tensor(x, dtype=torch.float32).to(device)).cpu().detach().numpy(),
-        data=background_final
+        data=Xb.values
     )
-    shap_values = explainer.shap_values(input_final)
+    shap_values = explainer.shap_values(Xi.values)
 
     plt.clf()
     _waterfall.waterfall_legacy(
         explainer.expected_value[0],
         shap_values[0][0],
-        feature_names=input_df.columns
+        feature_names=Xb.columns
     )
     fig = plt.gcf()
     st_placeholder.pyplot(fig)
