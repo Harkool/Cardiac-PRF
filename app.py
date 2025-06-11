@@ -48,7 +48,7 @@ def prepare_scaler(df, skip_list, target_col='RF'):
 def explain_shap_waterfall(model, input_df, background_df, skip_list, scaler, st_placeholder):
     Xb = background_df.copy()
     Xi = input_df.copy()
-    scale_cols = Xb.drop(Xb.columns[skip_list], axis=1).columns
+    scale_cols = Xb.drop(Xb.columns, axis=1).columns
     scaler_data = scaler.transform(Xb[scale_cols])
     Xi_scaled = scaler.transform(Xi[scale_cols])
     Xb[scale_cols] = scaler_data
