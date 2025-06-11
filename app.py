@@ -90,8 +90,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # ========== Load Data ========== 
 # 读取 pkl 文件替代 CSV 文件
-df1 = pd.read_pickle("traindata1.pkl")  # 加载 pkl 文件
-df2 = pd.read_pickle("traindata2.pkl")  # 加载 pkl 文件
+df1 = pd.read_pickle("traindata1.pkl")  
+df2 = pd.read_pickle("traindata2.pkl") 
 
 skip1 = [2, 3, 4, 5, 6, 7]
 scaler1, columns1 = prepare_scaler(df1, skip1)
@@ -107,9 +107,7 @@ model2.load_state_dict(torch.load("dnn_model2.pth", map_location=device))
 
 # ========== Streamlit UI ========== 
 st.title("Risk Prediction for Postoperative Respiratory Failure (PRF)")
-
-model_type = st.sidebar.radio("Choose Model", ["Preoperative Model", "Pre + Intraoperative Model"])
-
+model_type = st.sidebar.radio("Choose Model", ["Preoperative Model", "Pre + Intraoperative Model"], index=1)
 if model_type == "Preoperative Model":
     a = [
         st.sidebar.number_input("Age", 18, 120),
