@@ -148,7 +148,6 @@ if st.button("Predict PRF Risk"):
             explain_shap_waterfall(model1, input_df, df1.drop(columns=['RF']), skip1, scaler1, st)
         else:
             explain_shap_waterfall(model2, input_df, df2.drop(columns=['RF']), skip2, scaler2, st)
-
 st.markdown("---")
 st.markdown("*This application does not store any of your input data.*")
 st.write("2025 Nanjing First Hospital, Nanjing Medical University. All Rights Reserved ")
