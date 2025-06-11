@@ -151,3 +151,5 @@ if st.button("Predict PRF Risk"):
 
 st.markdown("---")
 st.markdown("*This application does not store any of your input data.*")
+st.write("2025 Nanjing First Hospital, Nanjing Medical University. All Rights Reserved ")
+st.write("✉ Contact Us: zoujianjun100@126.com")
